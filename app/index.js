@@ -1,15 +1,11 @@
-import { Text, View } from "react-native";
+import { SafeAreaView, View, Text } from 'react-native';
 
-export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Welcome to MemoryLog!</Text>
+const MemoryLog = () => (
+  <SafeAreaView className="flex-1 bg-gray-900">
+    <View className="px-4 py-8">
+      <Text className="text-4xl font-bold text-[#8b5cf6]">MemoryLog</Text>
     </View>
-  );
-}
+  </SafeAreaView>
+);
+
+export default MemoryLog;
