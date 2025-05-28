@@ -49,7 +49,7 @@ const MemoryLog = () => {
         <View className="px-6 py-4 gap-y-4">
           <TouchableOpacity
             onPress={handleSelectImage}
-            className="border-2 border-dashed border-gray-600 rounded-lg p-8 items-center justify-center h-64">
+            className="border-2 border-dashed border-gray-600 rounded-lg p-10 items-center justify-center h-72">
             {newSnippet.image ? (
               <Image source={{ uri: newSnippet.image }} className="w-full h-full rounded-lg" resizeMode="contain" />
             ) : (
