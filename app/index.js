@@ -39,7 +39,7 @@ const MemoryLog = () => {
       <Modalize
         ref={modalRef}
         snapPoint={420}
-        modalStyle={{ backgroundColor: '#1f2937', borderTopColor: '#374151', borderTopWidth: 1 }}
+        modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 1 }}
         handleStyle={{ backgroundColor: '#6b7280' }}
         adjustToContentHeight={false}>
         <View className="px-6 pt-6 pb-4">
