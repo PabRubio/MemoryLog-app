@@ -1,16 +1,17 @@
 import React, { useRef, useState } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
-import { SafeAreaView, View, Text, TouchableOpacity, Image, TextInput, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modalize } from 'react-native-modalize';
 import { Feather } from '@expo/vector-icons';
 
+import {
+  SafeAreaView, View, Text,
+  TouchableOpacity, Image, TextInput
+} from 'react-native';
+
 const emojiOptions = ['😊', '❤️', '😢', '😎'];
 
 const MemoryLog = () => {
-  const { width } = useWindowDimensions();
-  const isSmallScreen = width < 375;
-
   const modalRef = useRef(null);
   const openModal = () => modalRef.current?.open();
 
@@ -68,8 +69,7 @@ const MemoryLog = () => {
             placeholderTextColor="#9ca3af"
             multiline
             className="w-full p-3 rounded-lg bg-gray-700 text-gray-100"
-            style={{ minHeight: 150, maxHeight: 250, textAlignVertical: 'top' }}
-          />
+            style={{ minHeight: 150, maxHeight: 250, textAlignVertical: 'top' }} />
 
           <View className="flex-row justify-between items-center">
             <View className="flex-row gap-2">
@@ -86,8 +86,9 @@ const MemoryLog = () => {
             <TouchableOpacity
               onPress={handleSaveSnippet}
               disabled={!newSnippet.image || !newSnippet.caption}
-              className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50">
-              <Text className="text-gray-100 font-medium">{isSmallScreen ? 'Save' : 'Save Snippet'}</Text>
+              className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
+              <Text className="text-gray-100 font-medium hidden min-[375px]:inline">Save Snippet</Text>
+              <Text className="text-gray-100 font-medium inline min-[375px]:hidden">Save</Text>
             </TouchableOpacity>
           </View>
         </View>
