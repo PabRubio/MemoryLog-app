@@ -9,7 +9,7 @@ import {
   TouchableOpacity, Image, TextInput
 } from 'react-native';
 
-const emojiOptions = ['😊', '❤️', '😢', '😎'];
+const emojiOptions = ['😊', '😢', '❤️', '😎'];
 
 const MemoryLog = () => {
   const modalRef = useRef(null);
