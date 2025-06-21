@@ -77,7 +77,10 @@ const MemoryLog = () => {
           ref={modalRef}
           modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 1 }}
           handleStyle={{ backgroundColor: '#6b7280' }}
-          adjustToContentHeight={false}>
+          adjustToContentHeight={false}
+          onClosed={() => {
+            setNewSnippet({ image: null, caption: '', emoji: '😊' });
+          }}>
           <View className="px-6 pt-6 pb-4">
             <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
           </View>
