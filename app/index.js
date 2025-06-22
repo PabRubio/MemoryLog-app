@@ -14,7 +14,23 @@ const emojiOptions = ['😊', '😢', '❤️', '😎'];
 
 const MemoryLog = () => {
   const modalRef = useRef(null);
-  const openModal = () => modalRef.current?.open();
+  const [buttonScale] = useState(new Animated.Value(1));
+
+  const openModal = () => {
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.95,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+    modalRef.current?.open();
+  };
 
   const [newSnippet, setNewSnippet] = useState({ image: null, caption: '', emoji: '😊' });
   const [keyboardOffset] = useState(new Animated.Value(0));
@@ -66,10 +82,12 @@ const MemoryLog = () => {
               </LinearGradient>
             </MaskedView>
 
-            <TouchableOpacity onPress={openModal} className="flex-row items-center justify-center px-6 py-3 rounded-lg bg-blue-600">
-              <Feather name="plus-circle" size={20} color="#f1f5f9" />
-              <Text className="hidden min-[420px]:inline ml-2 text-lg text-gray-100">New Snippet</Text>
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+              <TouchableOpacity onPress={openModal} activeOpacity={1} className="flex-row items-center justify-center px-6 py-3 rounded-lg bg-blue-600">
+                <Feather name="plus-circle" size={20} color="#f1f5f9" />
+                <Text className="hidden min-[420px]:inline ml-2 text-lg text-gray-100">New Snippet</Text>
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         </View>
 
