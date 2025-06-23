@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modalize } from 'react-native-modalize';
+import * as ImagePicker from 'expo-image-picker';
 import { Feather } from '@expo/vector-icons';
 
 import {
@@ -64,7 +65,18 @@ const MemoryLog = () => {
     };
   }, [keyboardOffset]);
 
-  const handleSelectImage = () => { };
+  const handleSelectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setNewSnippet(prev => ({ ...prev, image: result.assets[0].uri }));
+    }
+  };
   const handleSaveSnippet = () => { };
 
   return (
