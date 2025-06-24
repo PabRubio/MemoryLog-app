@@ -16,6 +16,7 @@ const emojiOptions = ['😊', '😢', '❤️', '😎'];
 const MemoryLog = () => {
   const modalRef = useRef(null);
   const [buttonScale] = useState(new Animated.Value(1));
+  const [savedSnippets, setSavedSnippets] = useState([]);
 
   const openModal = () => {
     Animated.sequence([
@@ -77,7 +78,13 @@ const MemoryLog = () => {
       setNewSnippet(prev => ({ ...prev, image: result.assets[0].uri }));
     }
   };
-  const handleSaveSnippet = () => { };
+
+  const handleSaveSnippet = () => {
+    if (newSnippet.image && newSnippet.caption) {
+      setSavedSnippets(prev => [...prev, { ...newSnippet, id: Date.now() }]);
+      modalRef.current?.close();
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-gray-900">
@@ -100,6 +107,25 @@ const MemoryLog = () => {
                 <Text className="hidden min-[420px]:inline ml-2 text-lg text-gray-100">New Snippet</Text>
               </TouchableOpacity>
             </Animated.View>
+          </View>
+        </View>
+
+        <View className="flex-1 px-4">
+          <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
+            {savedSnippets.map((snippet) => (
+              <TouchableOpacity
+                key={snippet.id}
+                className="p-1"
+                style={{ width: '33.333%' }}
+                activeOpacity={0.8}>
+                <View className="aspect-square overflow-hidden rounded-lg">
+                  <Image
+                    source={{ uri: snippet.image }}
+                    className="w-full h-full"
+                    resizeMode="cover" />
+                </View>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
