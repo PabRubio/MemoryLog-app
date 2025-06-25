@@ -36,6 +36,7 @@ const MemoryLog = () => {
 
   const [newSnippet, setNewSnippet] = useState({ image: null, caption: '', emoji: '😊' });
   const [keyboardOffset] = useState(new Animated.Value(0));
+  const [modalSnapPoint, setModalSnapPoint] = useState(0);
 
   useEffect(() => {
     const keyboardWillShowListener = Keyboard.addListener(
@@ -94,7 +95,7 @@ const MemoryLog = () => {
           transform: [{ translateY: keyboardOffset }]
         }}>
         <View className="px-4 py-8">
-          <View className="flex-row justify-between items-center">
+          <View className="flex-row justify-between items-center mt-6">
             <MaskedView maskElement={<Text className="text-4xl font-bold text-black" style={{ lineHeight: 48 }}>MemoryLog</Text>}>
               <LinearGradient colors={['#3b82f6', '#8b5cf6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} className="px-1">
                 <Text className="opacity-0 text-4xl font-bold text-black" style={{ lineHeight: 48 }}>MemoryLog</Text>
@@ -134,57 +135,65 @@ const MemoryLog = () => {
           modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 1 }}
           handleStyle={{ backgroundColor: '#6b7280' }}
           adjustToContentHeight={false}
+          disableScrollIfPossible={false}
+          modalHeight={modalSnapPoint}
           onClosed={() => {
             setNewSnippet({ image: null, caption: '', emoji: '😊' });
           }}>
-          <View className="px-6 pt-6 pb-4">
-            <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
-          </View>
+          <View
+            onLayout={(event) => {
+              const bottomPadding = 40;
+              const { height } = event.nativeEvent.layout;
+              setModalSnapPoint(height + bottomPadding);
+            }}>
+            <View className="px-6 pt-6 pb-4">
+              <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
+            </View>
 
-          <View className="px-6 py-4 gap-y-4">
-            <TouchableOpacity
-              onPress={handleSelectImage}
-              className="border-2 border-dashed border-gray-600 rounded-lg p-10 items-center justify-center h-72">
-              {newSnippet.image ? (
-                <Image source={{ uri: newSnippet.image }} className="w-full h-full rounded-lg" resizeMode="contain" />
-              ) : (
-                <>
-                  <Feather name="camera" size={36} color="#9ca3af" style={{ marginBottom: 12 }} />
-                  <Text className="text-base text-gray-400">Tap to upload photo</Text>
-                </>
-              )}
-            </TouchableOpacity>
-
-            <TextInput
-              value={newSnippet.caption}
-              onChangeText={text => {
-                if (text.length <= 50) setNewSnippet(prev => ({ ...prev, caption: text }));
-              }}
-              placeholder="What's the story behind this moment?"
-              placeholderTextColor="#9ca3af"
-              multiline
-              className="w-full p-3 rounded-lg bg-gray-700 text-gray-100"
-              style={{ minHeight: 150, maxHeight: 250, textAlignVertical: 'top' }} />
-
-            <View className="flex-row justify-between items-center">
-              <View className="flex-row gap-2">
-                {emojiOptions.map(emoji => (
-                  <TouchableOpacity
-                    key={emoji}
-                    onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
-                    className={`p-2 rounded ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}>
-                    <Text className="text-xl">{emoji}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
+            <View className="px-6 py-4 gap-y-4">
               <TouchableOpacity
-                onPress={handleSaveSnippet}
-                disabled={!newSnippet.image || !newSnippet.caption}
-                className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
-                <Text className="text-gray-100 font-medium hidden min-[375px]:inline">Save Snippet</Text>
-                <Text className="text-gray-100 font-medium inline min-[375px]:hidden">Save</Text>
+                onPress={handleSelectImage}
+                className="border-2 border-dashed border-gray-600 rounded-lg p-10 items-center justify-center h-72">
+                {newSnippet.image ? (
+                  <Image source={{ uri: newSnippet.image }} className="w-full h-full rounded-lg" resizeMode="contain" />
+                ) : (
+                  <>
+                    <Feather name="camera" size={36} color="#9ca3af" style={{ marginBottom: 12 }} />
+                    <Text className="text-base text-gray-400">Tap to upload photo</Text>
+                  </>
+                )}
               </TouchableOpacity>
+
+              <TextInput
+                value={newSnippet.caption}
+                onChangeText={text => {
+                  if (text.length <= 50) setNewSnippet(prev => ({ ...prev, caption: text }));
+                }}
+                placeholderTextColor="#9ca3af" multiline
+                placeholder="What's the story behind this moment?"
+                className="w-full p-3 rounded-lg bg-gray-700 text-gray-100"
+                style={{ height: 150, textAlignVertical: 'top' }} />
+
+              <View className="flex-row justify-between items-center">
+                <View className="flex-row gap-2">
+                  {emojiOptions.map(emoji => (
+                    <TouchableOpacity
+                      key={emoji}
+                      onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
+                      className={`p-2 rounded ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}>
+                      <Text className="text-xl">{emoji}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+
+                <TouchableOpacity
+                  onPress={handleSaveSnippet}
+                  disabled={!newSnippet.image || !newSnippet.caption}
+                  className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
+                  <Text className="text-gray-100 font-medium hidden min-[375px]:inline">Save Snippet</Text>
+                  <Text className="text-gray-100 font-medium inline min-[375px]:hidden">Save</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </Modalize>
