@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
 import { Feather } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 import {
   SafeAreaView, View, Text,
@@ -14,6 +15,7 @@ import {
 const emojiOptions = ['😊', '😢', '❤️', '😎'];
 
 const MemoryLog = () => {
+  const router = useRouter();
   const modalRef = useRef(null);
   const [buttonScale] = useState(new Animated.Value(1));
   const [savedSnippets, setSavedSnippets] = useState([]);
@@ -33,6 +35,17 @@ const MemoryLog = () => {
     ]).start();
     modalRef.current?.open();
   };
+
+  const navigateToSnippet = snippet =>
+    router.push({
+      pathname: "/snippet",
+      params: {
+        id: snippet.id,
+        image: encodeURIComponent(snippet.image),
+        caption: encodeURIComponent(snippet.caption),
+        emoji: encodeURIComponent(snippet.emoji),
+      },
+    });
 
   const [newSnippet, setNewSnippet] = useState({ image: null, caption: '', emoji: '😊' });
   const [keyboardOffset] = useState(new Animated.Value(0));
@@ -111,18 +124,19 @@ const MemoryLog = () => {
           </View>
         </View>
 
-        <View className="flex-1 px-4">
+        <View className="flex-1 px-4 pt-4">
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
             {savedSnippets.map((snippet) => (
               <TouchableOpacity
                 key={snippet.id}
                 className="p-1"
+                activeOpacity={0.8}
                 style={{ width: '33.333%' }}
-                activeOpacity={0.8}>
+                onPress={() => navigateToSnippet(snippet)}>
                 <View className="aspect-square overflow-hidden rounded-lg">
                   <Image
-                    source={{ uri: snippet.image }}
                     className="w-full h-full"
+                    source={{ uri: snippet.image }}
                     resizeMode="cover" />
                 </View>
               </TouchableOpacity>
