@@ -3,6 +3,7 @@ import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
@@ -89,7 +90,17 @@ const MemoryLog = () => {
     });
 
     if (!result.canceled) {
-      setNewSnippet(prev => ({ ...prev, image: result.assets[0].uri }));
+      const fileName = `image_${Date.now()}.jpeg`;
+      const newPath = FileSystem.documentDirectory + fileName;
+
+      try {
+        await FileSystem.copyAsync({
+          from: result.assets[0].uri, to: newPath
+        });
+        setNewSnippet(prev => ({ ...prev, image: newPath }));
+      } catch (error) {
+        setNewSnippet(prev => ({ ...prev, image: result.assets[0].uri }));
+      }
     }
   };
 
