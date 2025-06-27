@@ -7,7 +7,11 @@ import { GestureHandlerRootView }
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          animation: 'fade'
+        }} />
     </GestureHandlerRootView>
   );
 }
