@@ -189,3 +189,89 @@ const SnippetDetail = () => {
 };
 
 export default SnippetDetail;
+
+const styles = StyleSheet.create({
+  fullscreenContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'black',
+  },
+  backgroundImage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '40%',
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 30,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  dateContainer: {
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  dateText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'white',
+  },
+  bottomContent: {
+    paddingBottom: 30,
+    paddingHorizontal: 24,
+    position: 'relative',
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  captionContainer: {
+    width: '100%',
+  },
+  captionText: {
+    fontSize: 20,
+    color: 'white',
+    fontWeight: '600',
+    textShadowRadius: 3,
+    textShadowColor: 'rgba(0,0,0,0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+  },
+  emojiContainer: {
+    position: 'absolute',
+    right: 0,
+    bottom: 0,
+    width: 60,
+    height: 60,
+  },
+  emoji: {
+    fontSize: 48,
+    marginBottom: 4,
+  },
+});
