@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,7 +11,7 @@ import { useRouter } from 'expo-router';
 import {
   SafeAreaView, View, Text,
   TouchableOpacity, Image, TextInput,
-  Keyboard, Animated, Platform
+  Keyboard, Animated, Platform, Dimensions
 } from 'react-native';
 
 const emojiOptions = ['😊', '😢', '❤️', '😎'];
@@ -18,8 +19,14 @@ const emojiOptions = ['😊', '😢', '❤️', '😎'];
 const MemoryLog = () => {
   const router = useRouter();
   const modalRef = useRef(null);
+  const insets = useSafeAreaInsets();
   const [buttonScale] = useState(new Animated.Value(1));
   const [savedSnippets, setSavedSnippets] = useState([]);
+
+  const iosModalStyles = {
+    marginBottom: Platform.OS === 'ios' ? -insets.bottom : 0,
+    paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
+  };
 
   const openModal = () => {
     Animated.sequence([
@@ -68,9 +75,8 @@ const MemoryLog = () => {
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       (e) => {
         Animated.timing(keyboardOffset, {
-          toValue: 0,
+          toValue: 0, useNativeDriver: true,
           duration: Platform.OS === 'ios' ? e.duration : 100,
-          useNativeDriver: true,
         }).start();
       }
     );
@@ -83,6 +89,7 @@ const MemoryLog = () => {
 
   const handleSelectImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
+      presentationStyle: 'fullScreen',
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
@@ -115,11 +122,10 @@ const MemoryLog = () => {
     <SafeAreaView className="flex-1 bg-gray-900">
       <Animated.View
         style={{
-          flex: 1,
-          transform: [{ translateY: keyboardOffset }]
+          flex: 1, transform: [{ translateY: keyboardOffset }]
         }}>
         <View className="px-4 py-8">
-          <View className="flex-row justify-between items-center mt-6">
+          <View className={`flex-row justify-between items-center ${Platform.OS === 'ios' ? '-mt-4' : 'mt-6'}`}>{/* LOL */}
             <MaskedView maskElement={<Text className="text-4xl font-bold text-black" style={{ lineHeight: 48 }}>MemoryLog</Text>}>
               <LinearGradient colors={['#3b82f6', '#8b5cf6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} className="px-1">
                 <Text className="opacity-0 text-4xl font-bold text-black" style={{ lineHeight: 48 }}>MemoryLog</Text>
@@ -128,8 +134,8 @@ const MemoryLog = () => {
 
             <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
               <TouchableOpacity onPress={openModal} activeOpacity={1} className="flex-row items-center justify-center px-6 py-3 rounded-lg bg-blue-600">
-                <Feather name="plus-circle" size={20} color="#f1f5f9" />
-                <Text className="hidden min-[420px]:inline ml-2 text-lg text-gray-100">New Snippet</Text>
+                <Feather name="plus-circle" size={20} color="#f1f5f9" />{/* random inline heheboi */}
+                {Dimensions.get('window').width >= 420 && <Text className="ml-2 text-lg text-gray-100">New Snippet</Text>}
               </TouchableOpacity>
             </Animated.View>
           </View>
@@ -139,8 +145,8 @@ const MemoryLog = () => {
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
             {savedSnippets.map((snippet) => (
               <TouchableOpacity
-                key={snippet.id}
                 className="p-1"
+                key={snippet.id}
                 activeOpacity={0.8}
                 style={{ width: '33.333%' }}
                 onPress={() => navigateToSnippet(snippet)}>
@@ -157,21 +163,25 @@ const MemoryLog = () => {
 
         <Modalize
           ref={modalRef}
-          modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 1 }}
-          handleStyle={{ backgroundColor: '#6b7280' }}
+          modalHeight={modalSnapPoint}
           adjustToContentHeight={false}
           disableScrollIfPossible={false}
-          modalHeight={modalSnapPoint}
+          handleStyle={{ backgroundColor: '#6b7280' }}
+          modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 1,
+            borderTopLeftRadius: 26, borderTopRightRadius: 26, ...iosModalStyles }}
+          overlayStyle={{ top: -insets.top, bottom: -insets.bottom }}
           onClosed={() => {
             setNewSnippet({ image: null, caption: '', emoji: '😊' });
           }}>
+
           <View
             onLayout={(event) => {
-              const bottomPadding = 40;
+              const bottomPadding = 40;{/* temp */}
               const { height } = event.nativeEvent.layout;
               setModalSnapPoint(height + bottomPadding);
             }}>
-            <View className="px-6 pt-6 pb-4">
+
+            <View className="px-6 pt-6 pb-2">
               <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
             </View>
 
@@ -203,8 +213,7 @@ const MemoryLog = () => {
                 <View className="flex-row gap-2">
                   {emojiOptions.map(emoji => (
                     <TouchableOpacity
-                      key={emoji}
-                      onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
+                      key={emoji} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
                       className={`p-2 rounded ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}>
                       <Text className="text-xl">{emoji}</Text>
                     </TouchableOpacity>
@@ -215,8 +224,7 @@ const MemoryLog = () => {
                   onPress={handleSaveSnippet}
                   disabled={!newSnippet.image || !newSnippet.caption}
                   className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
-                  <Text className="text-gray-100 font-medium hidden min-[375px]:inline">Save Snippet</Text>
-                  <Text className="text-gray-100 font-medium inline min-[375px]:hidden">Save</Text>
+                  <Text className="text-gray-100 font-medium"> {Dimensions.get('window').width >= 420 ? 'Save Snippet' : 'Save'} </Text>
                 </TouchableOpacity>
               </View>
             </View>
