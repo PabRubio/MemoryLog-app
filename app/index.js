@@ -204,6 +204,9 @@ const MemoryLog = () => {
                 onChangeText={text => {
                   if (text.length <= 50) setNewSnippet(prev => ({ ...prev, caption: text }));
                 }}
+                onBlur={() => {
+                  setNewSnippet(prev => ({ ...prev, caption: prev.caption.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim() }));
+                }}
                 placeholderTextColor="#9ca3af" multiline
                 placeholder="What's the story behind this moment?"
                 className="w-full p-3 rounded-lg bg-gray-700 text-gray-100"
