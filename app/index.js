@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Modalize } from 'react-native-modalize';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 import {
@@ -14,7 +14,14 @@ import {
   Keyboard, Animated, Platform, Dimensions
 } from 'react-native';
 
-const emojiOptions = ['😊', '😢', '❤️', '😎'];
+const emojiOptions = ['😊', '😢', '❤️'];
+
+const moreEmojis = [
+  '😂', '🤣', '😍', '🥰', '😎', '🤩', '🥺', '😭',
+  '🤔', '🙄', '😴', '🥳', '😤', '😡', '😱', '🤯',
+  '🥸', '💀', '💯', '🔥', '👍', '💪', '🎉', '🧁',
+  '👀', '💩', '🌈', '🎮', '🍕', '🎵', '✨', '💫',
+  '🌟', '💻', '🚀', '🐔'];
 
 const MemoryLog = () => {
   const router = useRouter();
@@ -54,6 +61,9 @@ const MemoryLog = () => {
         emoji: encodeURIComponent(snippet.emoji),
       },
     });
+
+  const [showEmojiPanel, setShowEmojiPanel] = useState(false);
+  const [mainContentHeight, setMainContentHeight] = useState(0);
 
   const [newSnippet, setNewSnippet] = useState({ image: null, caption: '', emoji: '😊' });
   const [keyboardOffset] = useState(new Animated.Value(0));
@@ -171,67 +181,98 @@ const MemoryLog = () => {
             borderTopLeftRadius: 26, borderTopRightRadius: 26, ...iosModalStyles }}
           overlayStyle={{ top: -insets.top, bottom: -insets.bottom }}
           onClosed={() => {
+            setShowEmojiPanel(false);{/* yeeeeeeeeeeeeeeeeeeeeeet */}
             setNewSnippet({ image: null, caption: '', emoji: '😊' });
           }}>
 
-          <View
-            onLayout={(event) => {
-              const bottomPadding = 40;{/* temp */}
-              const { height } = event.nativeEvent.layout;
-              setModalSnapPoint(height + bottomPadding);
-            }}>
+          {!showEmojiPanel ? (
+            <View
+              onLayout={(event) => {
+                const bottomPadding = 40;
+                const { height } = event.nativeEvent.layout;
+                setModalSnapPoint(height + bottomPadding);
+                setMainContentHeight(height);
+              }}>
 
-            <View className="px-6 pt-6 pb-2">
-              <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
+              <View className="px-6 pt-6 pb-2">
+                <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
+              </View>
+
+              <View className="px-6 py-4 gap-y-4">
+                <TouchableOpacity
+                  onPress={handleSelectImage}
+                  className="border-2 border-dashed border-gray-600 rounded-lg p-10 items-center justify-center h-72">
+                  {newSnippet.image ? (
+                    <Image source={{ uri: newSnippet.image }} className="w-full h-full rounded-lg" resizeMode="contain" />
+                  ) : (
+                    <>
+                      <Feather name="camera" size={36} color="#9ca3af" style={{ marginBottom: 12 }} />
+                      <Text className="text-base text-gray-400">Tap to upload photo</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+
+                <TextInput
+                  value={newSnippet.caption}
+                  onChangeText={text => {
+                    if (text.length <= 50) setNewSnippet(prev => ({ ...prev, caption: text }));
+                  }}
+                  onBlur={() => {
+                    setNewSnippet(prev => ({ ...prev, caption: prev.caption.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim() }));
+                  }}
+                  placeholderTextColor="#9ca3af" multiline
+                  placeholder="What's the story behind this moment?"
+                  className="w-full p-3 rounded-lg bg-gray-700 text-gray-100"
+                  style={{ height: 150, textAlignVertical: 'top' }} />
+
+                <View className="flex-row justify-between items-center">
+                  <View className="flex-row gap-2">
+                    {emojiOptions.map(emoji => (
+                      <TouchableOpacity
+                        key={emoji} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
+                        className={`p-2 rounded ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}>
+                        <Text className="text-xl">{emoji}</Text>
+                      </TouchableOpacity>
+                    ))}
+                    <TouchableOpacity
+                      onPress={() => setShowEmojiPanel(true)} className="p-2 rounded bg-transparent items-center justify-center">
+                      <MaterialIcons name="palette" size={28} color={moreEmojis.includes(newSnippet.emoji) && !emojiOptions.includes(newSnippet.emoji) ? '#3b82f6' : '#9ca3af'} />
+                    </TouchableOpacity>
+                  </View>
+
+                  <TouchableOpacity
+                    onPress={handleSaveSnippet} disabled={!newSnippet.image || !newSnippet.caption}
+                    className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
+                    <Text className="text-gray-100 font-medium"> {Dimensions.get('window').width >= 420 ? 'Save Snippet' : 'Save'} </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
+          ) : (
+            <View
+              style={{ height: mainContentHeight }}>
 
-            <View className="px-6 py-4 gap-y-4">
-              <TouchableOpacity
-                onPress={handleSelectImage}
-                className="border-2 border-dashed border-gray-600 rounded-lg p-10 items-center justify-center h-72">
-                {newSnippet.image ? (
-                  <Image source={{ uri: newSnippet.image }} className="w-full h-full rounded-lg" resizeMode="contain" />
-                ) : (
-                  <>
-                    <Feather name="camera" size={36} color="#9ca3af" style={{ marginBottom: 12 }} />
-                    <Text className="text-base text-gray-400">Tap to upload photo</Text>
-                  </>
-                )}
-              </TouchableOpacity>
+              <View className="px-6 pt-6 pb-2 flex-row justify-between items-center">
+                <Text className="text-lg font-semibold text-gray-100">Emoji Picker</Text>
+                <TouchableOpacity onPress={() => setShowEmojiPanel(false)}>
+                  <MaterialIcons name="palette" size={24} color="#9ca3af"/>
+                </TouchableOpacity>
+              </View>
 
-              <TextInput
-                value={newSnippet.caption}
-                onChangeText={text => {
-                  if (text.length <= 50) setNewSnippet(prev => ({ ...prev, caption: text }));
-                }}
-                onBlur={() => {
-                  setNewSnippet(prev => ({ ...prev, caption: prev.caption.replace(/\n/g, ' ').replace(/\s{2,}/g, ' ').trim() }));
-                }}
-                placeholderTextColor="#9ca3af" multiline
-                placeholder="What's the story behind this moment?"
-                className="w-full p-3 rounded-lg bg-gray-700 text-gray-100"
-                style={{ height: 150, textAlignVertical: 'top' }} />
-
-              <View className="flex-row justify-between items-center">
-                <View className="flex-row gap-2">
-                  {emojiOptions.map(emoji => (
+              <View className="px-6 py-4 flex-1">
+                <View className="flex-row flex-wrap justify-between">
+                  {moreEmojis.map(emoji => (
                     <TouchableOpacity
                       key={emoji} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
-                      className={`p-2 rounded ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}>
+                      className={`p-2 rounded mb-3 ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}
+                      style={{ width: '15%', aspectRatio: 1 }}>
                       <Text className="text-xl">{emoji}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
-
-                <TouchableOpacity
-                  onPress={handleSaveSnippet}
-                  disabled={!newSnippet.image || !newSnippet.caption}
-                  className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
-                  <Text className="text-gray-100 font-medium"> {Dimensions.get('window').width >= 420 ? 'Save Snippet' : 'Save'} </Text>
-                </TouchableOpacity>
               </View>
             </View>
-          </View>
+          )}
         </Modalize>
       </Animated.View>
     </SafeAreaView>
