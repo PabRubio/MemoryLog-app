@@ -28,6 +28,7 @@ const MemoryLog = () => {
   const modalRef = useRef(null);
   const insets = useSafeAreaInsets();
   const [buttonScale] = useState(new Animated.Value(1));
+  const [paletteScale] = useState(new Animated.Value(1));
   const [savedSnippets, setSavedSnippets] = useState([]);
 
   const iosModalStyles = {
@@ -35,19 +36,23 @@ const MemoryLog = () => {
     paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
   };
 
-  const openModal = () => {
+  const animatePress = (scaleValue, callback) => {
     Animated.sequence([
-      Animated.timing(buttonScale, {
+      Animated.timing(scaleValue, {
         toValue: 0.95,
         duration: 50,
         useNativeDriver: true,
       }),
-      Animated.timing(buttonScale, {
+      Animated.timing(scaleValue, {
         toValue: 1,
         duration: 100,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]).start(callback);
+  };
+
+  const openModal = () => {
+    animatePress(buttonScale);
     modalRef.current?.open();
   };
 
@@ -234,10 +239,15 @@ const MemoryLog = () => {
                         <Text className="text-xl">{emoji}</Text>
                       </TouchableOpacity>
                     ))}
-                    <TouchableOpacity
-                      onPress={() => setShowEmojiPanel(true)} className="p-2 rounded bg-transparent items-center justify-center">
-                      <MaterialIcons name="palette" size={28} color={moreEmojis.includes(newSnippet.emoji) && !emojiOptions.includes(newSnippet.emoji) ? '#3b82f6' : '#9ca3af'} />
-                    </TouchableOpacity>
+                    <Animated.View style={{ transform: [{ scale: paletteScale }] }}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          animatePress(paletteScale, () => setShowEmojiPanel(true));
+                        }}
+                        activeOpacity={1} className="p-2 rounded bg-transparent items-center justify-center">
+                        <MaterialIcons name="palette" size={28} color={moreEmojis.includes(newSnippet.emoji) && !emojiOptions.includes(newSnippet.emoji) ? '#3b82f6' : '#9ca3af'} />
+                      </TouchableOpacity>
+                    </Animated.View>
                   </View>
 
                   <TouchableOpacity
@@ -254,9 +264,15 @@ const MemoryLog = () => {
 
               <View className="px-6 pt-6 pb-2 flex-row justify-between items-center">
                 <Text className="text-lg font-semibold text-gray-100">Emoji Picker</Text>
-                <TouchableOpacity onPress={() => setShowEmojiPanel(false)}>
-                  <MaterialIcons name="palette" size={24} color="#9ca3af"/>
-                </TouchableOpacity>
+                <Animated.View style={{ transform: [{ scale: paletteScale }] }}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      animatePress(paletteScale, () => setShowEmojiPanel(false));
+                    }}
+                    activeOpacity={1}>{/* another inline heheboi */}
+                    <MaterialIcons name="palette" size={24} color="#9ca3af" />
+                  </TouchableOpacity>
+                </Animated.View>
               </View>
 
               <View className="px-6 py-4 flex-1">
