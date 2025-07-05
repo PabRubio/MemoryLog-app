@@ -56,23 +56,23 @@ const MemoryLog = () => {
     modalRef.current?.open();
   };
 
-  const navigateToSnippet = snippet =>
+  const navigateToSnippet = (snippet, position) =>
     router.push({
-      pathname: "/snippet",
+      pathname: "/viewer",
       params: {
-        id: snippet.id,
-        image: encodeURIComponent(snippet.image),
-        caption: encodeURIComponent(snippet.caption),
-        emoji: encodeURIComponent(snippet.emoji),
+        currentIndex: position,
+        snippets: encodeURIComponent(
+          JSON.stringify(savedSnippets)),
       },
     });
 
-  const [showEmojiPanel, setShowEmojiPanel] = useState(false);
-  const [mainContentHeight, setMainContentHeight] = useState(0);
+  const [modalSnapPoint, setModalSnapPoint] = useState(0);
+  const [keyboardOffset] = useState(new Animated.Value(0));
 
   const [newSnippet, setNewSnippet] = useState({ image: null, caption: '', emoji: '😊' });
-  const [keyboardOffset] = useState(new Animated.Value(0));
-  const [modalSnapPoint, setModalSnapPoint] = useState(0);
+
+  const [mainContentHeight, setMainContentHeight] = useState(0);
+  const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 
   useEffect(() => {
     const keyboardWillShowListener = Keyboard.addListener(
@@ -128,8 +128,8 @@ const MemoryLog = () => {
 
   const handleSaveSnippet = () => {
     if (newSnippet.image && newSnippet.caption) {
-      setSavedSnippets(prev => [...prev, { ...newSnippet, id: Date.now() }]);
-      modalRef.current?.close();
+      setSavedSnippets(prev => [{ ...newSnippet, id: Date.now() }, ...prev]);
+      modalRef.current?.close();{/* wtf */}
     }
   };
 
@@ -158,14 +158,14 @@ const MemoryLog = () => {
 
         <View className="flex-1 px-4 pt-4">
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
-            {savedSnippets.map((snippet) => (
+            {savedSnippets.map((snippet, position) => (
               <TouchableOpacity
                 className="p-1"
                 key={snippet.id}
                 activeOpacity={0.8}
                 style={{ width: '33.333%' }}
-                onPress={() => navigateToSnippet(snippet)}>
-                <View className="aspect-square overflow-hidden rounded-lg">
+                onPress={() => navigateToSnippet(snippet, position)}>
+                <View className="aspect-square overflow-hidden rounded-xl">
                   <Image
                     className="w-full h-full"
                     source={{ uri: snippet.image }}
@@ -182,7 +182,7 @@ const MemoryLog = () => {
           adjustToContentHeight={false}
           disableScrollIfPossible={false}
           handleStyle={{ backgroundColor: '#6b7280' }}
-          modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 1,
+          modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 0,
             borderTopLeftRadius: 26, borderTopRightRadius: 26, ...iosModalStyles }}
           overlayStyle={{ top: -insets.top, bottom: -insets.bottom }}
           onClosed={() => {
