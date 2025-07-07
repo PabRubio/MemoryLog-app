@@ -23,6 +23,27 @@ const moreEmojis = [
   '👀', '💩', '🌈', '🎮', '🍕', '🎵', '✨', '💫',
   '🌟', '💻', '🚀', '🐔'];
 
+const TouchableSticky = ({
+  children, onPress, stickyOpacity = 0.2, ...props }) => {
+
+  const [isPressed, setIsPressed] = useState(false);
+  
+  const handlePress = () => { setTimeout(() =>
+    (onPress?.(), setIsPressed(false)), 300); };
+
+  return (
+    <TouchableOpacity
+      {...props}
+      activeOpacity={1}
+      style={[props.style, { // gpu go brr
+        opacity: isPressed ? stickyOpacity : 1 }]}
+      onPressIn={() => setIsPressed(true)}
+      onPress={handlePress}>
+      {children}
+    </TouchableOpacity>
+  );
+};
+
 const MemoryLog = () => {
   const router = useRouter();
   const modalRef = useRef(null);
@@ -44,8 +65,8 @@ const MemoryLog = () => {
         useNativeDriver: true,
       }),
       Animated.timing(scaleValue, {
-        toValue: 1,
         duration: 100,
+        toValue: 1.0,
         useNativeDriver: true,
       }),
     ]).start(callback);
@@ -159,10 +180,10 @@ const MemoryLog = () => {
         <View className="flex-1 px-4 pt-4">
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
             {savedSnippets.map((snippet, position) => (
-              <TouchableOpacity
+              <TouchableSticky
                 className="p-1"
                 key={snippet.id}
-                activeOpacity={0.8}
+                stickyOpacity={0.5}
                 style={{ width: '33.333%' }}
                 onPress={() => navigateToSnippet(snippet, position)}>
                 <View className="aspect-square overflow-hidden rounded-xl">
@@ -171,7 +192,7 @@ const MemoryLog = () => {
                     source={{ uri: snippet.image }}
                     resizeMode="cover" />
                 </View>
-              </TouchableOpacity>
+              </TouchableSticky>
             ))}
           </View>
         </View>
@@ -204,7 +225,7 @@ const MemoryLog = () => {
               </View>
 
               <View className="px-6 py-4 gap-y-4">
-                <TouchableOpacity
+                <TouchableSticky // wut is dis?
                   onPress={handleSelectImage}
                   className="border-2 border-dashed border-gray-600 rounded-lg p-10 items-center justify-center h-72">
                   {newSnippet.image ? (
@@ -215,7 +236,7 @@ const MemoryLog = () => {
                       <Text className="text-base text-gray-400">Tap to upload photo</Text>
                     </>
                   )}
-                </TouchableOpacity>
+                </TouchableSticky>
 
                 <TextInput
                   value={newSnippet.caption}
@@ -233,10 +254,10 @@ const MemoryLog = () => {
                 <View className="flex-row justify-between items-center">
                   <View className="flex-row gap-2">
                     {emojiOptions.map(emoji => (
-                      <TouchableOpacity
-                        key={emoji} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
+                      <TouchableOpacity // poggers
+                        key={emoji} activeOpacity={1} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
                         className={`p-2 rounded ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}>
-                        <Text className="text-xl">{emoji}</Text>
+                        <Text className="text-xl">{emoji}</Text>{/* second inline heheboi */}
                       </TouchableOpacity>
                     ))}
                     <Animated.View style={{ transform: [{ scale: paletteScale }] }}>
@@ -250,11 +271,11 @@ const MemoryLog = () => {
                     </Animated.View>
                   </View>
 
-                  <TouchableOpacity
+                  <TouchableSticky // this again?
                     onPress={handleSaveSnippet} disabled={!newSnippet.image || !newSnippet.caption}
                     className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
                     <Text className="text-gray-100 font-medium"> {Dimensions.get('window').width >= 420 ? 'Save Snippet' : 'Save'} </Text>
-                  </TouchableOpacity>
+                  </TouchableSticky>
                 </View>
               </View>
             </View>
@@ -269,7 +290,7 @@ const MemoryLog = () => {
                     onPress={() => {
                       animatePress(paletteScale, () => setShowEmojiPanel(false));
                     }}
-                    activeOpacity={1}>{/* another inline heheboi */}
+                    activeOpacity={1}>
                     <MaterialIcons name="palette" size={24} color="#9ca3af" />
                   </TouchableOpacity>
                 </Animated.View>
@@ -278,10 +299,10 @@ const MemoryLog = () => {
               <View className="px-6 py-4 flex-1">
                 <View className="flex-row flex-wrap justify-between">
                   {moreEmojis.map(emoji => (
-                    <TouchableOpacity
-                      key={emoji} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
+                    <TouchableOpacity // tap tap
+                      key={emoji} activeOpacity={1} onPress={() => setNewSnippet(prev => ({ ...prev, emoji }))}
                       className={`p-2 rounded mb-3 ${newSnippet.emoji === emoji ? 'bg-blue-600' : 'bg-transparent'} items-center justify-center`}
-                      style={{ width: '15%', aspectRatio: 1 }}>
+                      style={{ width: '15%', aspectRatio: 1 }}>{/* another inline heheboi */}
                       <Text className="text-xl">{emoji}</Text>
                     </TouchableOpacity>
                   ))}
