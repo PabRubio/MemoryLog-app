@@ -10,7 +10,7 @@ import {
   Animated, StyleSheet, Dimensions
 } from 'react-native';
 
-const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
+const { height: screenHeight, width: screenWidth } = Dimensions.get('screen');
 
 const FloatingEmoji = ({ emoji, delay, onComplete }) => {
   const randomX = useRef(Math.random() * 80 - 40).current;
@@ -214,6 +214,7 @@ const SnippetViewer = () => {
     <View style={styles.container}>
       <FlatList
         pagingEnabled
+        bounces={false}
         data={snippets}
         ref={flatListRef}
         horizontal={false}
@@ -229,7 +230,7 @@ const SnippetViewer = () => {
         getItemLayout={(_, index) => ({
           index, length: screenHeight,
           offset: screenHeight * index,
-        })} />
+        })} overScrollMode="never" />
 
       <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
         <Animated.View style={{ transform: [{ scale: backButtonScale }] }}>

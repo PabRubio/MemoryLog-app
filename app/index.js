@@ -26,19 +26,24 @@ const moreEmojis = [
 const TouchableSticky = ({
   children, onPress, stickyOpacity = 0.2, ...props }) => {
 
+  const timeoutRef = useRef(null); // code go brrr
   const [isPressed, setIsPressed] = useState(false);
   
-  const handlePress = () => { setTimeout(() =>
-    (onPress?.(), setIsPressed(false)), 300); };
+  const handlePress = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setTimeout(() => (onPress?.(), setIsPressed(false)), 300);
+  };
 
   return (
     <TouchableOpacity
       {...props}
       activeOpacity={1}
-      style={[props.style, { // gpu go brr
-        opacity: isPressed ? stickyOpacity : 1 }]}
-      onPressIn={() => setIsPressed(true)}
-      onPress={handlePress}>
+      onPress={handlePress}
+      onPressIn={() => (setIsPressed(true),
+        timeoutRef.current = setTimeout(() =>
+        setIsPressed(false), 2000))} // pog
+      style={[props.style, {
+        opacity: isPressed ? stickyOpacity : 1 }]}>
       {children}
     </TouchableOpacity>
   );
@@ -113,6 +118,7 @@ const MemoryLog = () => {
         Animated.timing(keyboardOffset, {
           toValue: 0, useNativeDriver: true,
           duration: Platform.OS === 'ios' ? e.duration : 100,
+          // wot r u lookin' at?
         }).start();
       }
     );

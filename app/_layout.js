@@ -9,8 +9,8 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack
         screenOptions={{
+          animation: 'none',
           headerShown: false,
-          animation: 'fade'
         }} />
     </GestureHandlerRootView>
   );
