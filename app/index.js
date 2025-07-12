@@ -62,6 +62,8 @@ const MemoryLog = () => {
     paddingBottom: Platform.OS === 'ios' ? insets.bottom : 0,
   };
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
   const animatePress = (scaleValue, callback) => {
     Animated.sequence([
       Animated.timing(scaleValue, {
@@ -202,6 +204,12 @@ const MemoryLog = () => {
             ))}
           </View>
         </View>
+
+        <TouchableSticky
+          onPress={() => setIsLoggedIn(!isLoggedIn)} stickyOpacity={0.6} style={{ bottom: insets.bottom + 16, width: 112 }}
+          className="absolute right-6 py-3 rounded-full bg-gray-800/70 backdrop-blur-md items-center justify-center">
+          <Text className="text-gray-100 font-medium">{isLoggedIn ? 'LogOut' : 'SignIn'} </Text>{/* noice👌 */}
+        </TouchableSticky>
 
         <Modalize
           ref={modalRef}
