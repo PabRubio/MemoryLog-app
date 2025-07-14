@@ -176,18 +176,27 @@ const MemoryLog = () => {
               </LinearGradient>
             </MaskedView>
 
-            <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-              <TouchableOpacity onPress={openModal} activeOpacity={1} className="flex-row items-center justify-center px-6 py-3 rounded-lg bg-blue-600">
-                <Feather name="plus-circle" size={20} color="#f1f5f9" />{/* random inline heheboi */}
-                {Dimensions.get('window').width >= 420 && <Text className="ml-2 text-lg text-gray-100">New Snippet</Text>}
-              </TouchableOpacity>
-            </Animated.View>
+            {isLoggedIn ? (
+              <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                <TouchableOpacity onPress={openModal} activeOpacity={1} className="flex-row items-center justify-center px-6 py-3 rounded-lg bg-blue-600">
+                  <Feather name="plus-circle" size={20} color="#f1f5f9" />{/* random inline heheboi */}
+                  {Dimensions.get('window').width >= 420 && <Text className="ml-2 text-lg text-gray-100">New Snippet</Text>}
+                </TouchableOpacity>
+              </Animated.View>
+            ) : (
+              <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
+                <TouchableOpacity onPress={() => (0)} activeOpacity={1} className="flex-row items-center justify-center px-6 py-3 rounded-lg bg-gray-700">
+                  <Feather name="plus-circle" size={20} color="#6b7280" />{/* random inline heheboi */}
+                  {Dimensions.get('window').width >= 420 && <Text className="ml-2 text-lg text-gray-500">New Snippet</Text>}
+                </TouchableOpacity>
+              </Animated.View>
+            )}
           </View>
         </View>
 
         <View className="flex-1 px-4 pt-4">
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
-            {savedSnippets.map((snippet, position) => (
+            {(isLoggedIn ? savedSnippets : []).map((snippet, position) => (
               <TouchableSticky
                 className="p-1"
                 key={snippet.id}
