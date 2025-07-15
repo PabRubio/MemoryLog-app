@@ -9,9 +9,9 @@ import * as FileSystem from 'expo-file-system';
 import { useRouter } from 'expo-router';
 
 import {
-  SafeAreaView, View, Text,
-  TouchableOpacity, Image, TextInput,
-  Keyboard, Animated, Platform, Dimensions
+  SafeAreaView, View, Text, Image,
+  TouchableOpacity, TextInput, Keyboard,
+  Animated, Platform, Dimensions, ScrollView
 } from 'react-native';
 
 const emojiOptions = ['😊', '😢', '❤️'];
@@ -194,7 +194,7 @@ const MemoryLog = () => {
           </View>
         </View>
 
-        <View className="flex-1 px-4 pt-4">
+        <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
             {(isLoggedIn ? savedSnippets : []).map((snippet, position) => (
               <TouchableSticky
@@ -212,7 +212,7 @@ const MemoryLog = () => {
               </TouchableSticky>
             ))}
           </View>
-        </View>
+        </ScrollView>
 
         <TouchableSticky
           onPress={() => setIsLoggedIn(!isLoggedIn)} stickyOpacity={0.6} style={{ bottom: insets.bottom + 16, width: 112 }}
