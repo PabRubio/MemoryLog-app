@@ -53,7 +53,10 @@ const MemoryLog = () => {
   const router = useRouter();
   const modalRef = useRef(null);
   const insets = useSafeAreaInsets();
+
   const [buttonScale] = useState(new Animated.Value(1));
+  const [logoutScale] = useState(new Animated.Value(1));
+
   const [paletteScale] = useState(new Animated.Value(1));
   const [savedSnippets, setSavedSnippets] = useState([]);
 
@@ -168,7 +171,7 @@ const MemoryLog = () => {
         style={{
           flex: 1, transform: [{ translateY: keyboardOffset }]
         }}>
-        <View className="px-4 py-8">
+        <View className="px-4 py-8" style={{ paddingBottom: 53 }}>
           <View className={`flex-row justify-between items-center ${Platform.OS === 'ios' ? '-mt-4' : 'mt-6'}`}>{/* LOL */}
             <MaskedView maskElement={<Text className="text-4xl font-bold text-black" style={{ lineHeight: 48 }}>MemoryLog</Text>}>
               <LinearGradient colors={['#3b82f6', '#8b5cf6']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} className="px-1">
@@ -194,7 +197,7 @@ const MemoryLog = () => {
           </View>
         </View>
 
-        <ScrollView className="flex-1 px-4 pt-4" showsVerticalScrollIndicator={false}>
+        <ScrollView className="flex-1 px-4 pt-0" showsVerticalScrollIndicator={false}>
           <View className="flex-row flex-wrap" style={{ marginHorizontal: -4 }}>
             {(isLoggedIn ? savedSnippets : []).map((snippet, position) => (
               <TouchableSticky
@@ -214,11 +217,16 @@ const MemoryLog = () => {
           </View>
         </ScrollView>
 
-        <TouchableSticky
-          onPress={() => setIsLoggedIn(!isLoggedIn)} stickyOpacity={0.6} style={{ bottom: insets.bottom + 16, width: 112 }}
-          className="absolute right-6 py-3 rounded-full bg-gray-800/70 backdrop-blur-md items-center justify-center">
-          <Text className="text-gray-100 font-medium">{isLoggedIn ? 'LogOut' : 'SignIn'} </Text>{/* noice👌 */}
-        </TouchableSticky>
+        <Animated.View
+          className="absolute right-6"
+          style={{ bottom: insets.bottom, width: 112, transform: [{ scale: logoutScale }] }}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => animatePress(logoutScale, () => setIsLoggedIn(!isLoggedIn))} // noice👌
+            className="py-3 rounded-full bg-gray-800/70 backdrop-blur-md items-center justify-center">
+            <Text className="text-gray-100 font-medium">{isLoggedIn ? 'LogOut' : 'SignIn'} </Text>
+          </TouchableOpacity>
+        </Animated.View>
 
         <Modalize
           ref={modalRef}
