@@ -24,7 +24,7 @@ const moreEmojis = [
   '🌟', '💻', '🚀', '🐔'];
 
 const TouchableSticky = ({
-  children, onPress, stickyOpacity = 0.2, ...props }) => {
+  children, onPress, stickyOpacity = 0.3, ...props }) => {
 
   const timeoutRef = useRef(null); // code go brrr
   const [isPressed, setIsPressed] = useState(false);
@@ -34,6 +34,15 @@ const TouchableSticky = ({
     setTimeout(() => (onPress?.(), setIsPressed(false)), 300);
   };
 
+  const normalizeStyles = (style) => {
+    if (!style) return [];
+    return Array.isArray(style) ? style : [style];
+  };
+
+  const styles = normalizeStyles(props.style);
+  const mergedStyle = Object.assign({}, ...styles);
+  const { opacity = 1, ...cleanStyles } = mergedStyle;
+
   return (
     <TouchableOpacity
       {...props}
@@ -42,8 +51,8 @@ const TouchableSticky = ({
       onPressIn={() => (setIsPressed(true),
         timeoutRef.current = setTimeout(() =>
         setIsPressed(false), 2000))} // pog
-      style={[props.style, {
-        opacity: isPressed ? stickyOpacity : 1 }]}>
+      style={[cleanStyles, {
+        opacity: isPressed ? stickyOpacity : opacity }]}>
       {children}
     </TouchableOpacity>
   );
@@ -303,8 +312,8 @@ const MemoryLog = () => {
                   </View>
 
                   <TouchableSticky // this again?
-                    onPress={handleSaveSnippet} disabled={!newSnippet.image || !newSnippet.caption}
-                    className="px-4 py-2 rounded-lg bg-blue-600 disabled:opacity-50 flex-row items-center justify-center">
+                    onPress={handleSaveSnippet} style={{ opacity: newSnippet.image && newSnippet.caption ? 1 : 0.3 }}
+                    className={`px-4 py-2 rounded-lg bg-blue-600 flex-row items-center justify-center`} disabled={!newSnippet.image || !newSnippet.caption}>
                     <Text className="text-gray-100 font-medium"> {Dimensions.get('window').width >= 420 ? 'Save Snippet' : 'Save'} </Text>
                   </TouchableSticky>
                 </View>
