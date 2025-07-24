@@ -232,7 +232,7 @@ const SnippetViewer = () => {
           offset: screenHeight * index,
         })} overScrollMode="never" />
 
-      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+      <View style={[styles.header, { top: 60, right: 'auto', left: 'auto' }]}>
         <Animated.View style={{ transform: [{ scale: backButtonScale }] }}>
           <TouchableOpacity
             activeOpacity={1}

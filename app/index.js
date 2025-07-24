@@ -228,7 +228,7 @@ const MemoryLog = () => {
 
         <Animated.View
           className="absolute right-6"
-          style={{ bottom: insets.bottom, width: 112, transform: [{ scale: logoutScale }] }}>
+          style={{ bottom: insets.bottom + 3, width: 112, transform: [{ scale: logoutScale }] }}>
           <TouchableOpacity
             activeOpacity={1}
             onPress={() => animatePress(logoutScale, () => setIsLoggedIn(!isLoggedIn))} // noice👌
@@ -245,7 +245,10 @@ const MemoryLog = () => {
           handleStyle={{ backgroundColor: '#6b7280' }}
           modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 0,
             borderTopLeftRadius: 26, borderTopRightRadius: 26, ...iosModalStyles }}
-          overlayStyle={{ top: -insets.top, bottom: -insets.bottom }}
+          overlayStyle={{
+            top: Platform.OS === 'ios' ? -insets.top : 0,
+            bottom: Platform.OS === 'ios' ? -insets.bottom : 0
+          }}
           onClosed={() => {
             setShowEmojiPanel(false);{/* yeeeeeeeeeeeeeeeeeeeeeet */}
             setNewSnippet({ image: null, caption: '', emoji: '😊' });
@@ -260,7 +263,7 @@ const MemoryLog = () => {
                 setMainContentHeight(height);
               }}>
 
-              <View className="px-6 pt-6 pb-2">
+              <View className="px-6 pt-6 pb-6">
                 <Text className="text-lg font-semibold text-gray-100">Create New Snippet</Text>
               </View>
 
