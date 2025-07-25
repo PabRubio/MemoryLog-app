@@ -246,7 +246,7 @@ const MemoryLog = () => {
           modalStyle={{ backgroundColor: '#1f2937', borderTopWidth: 0,
             borderTopLeftRadius: 26, borderTopRightRadius: 26, ...iosModalStyles }}
           overlayStyle={{
-            top: Platform.OS === 'ios' ? -insets.top : 0,
+            top: Platform.OS === 'ios' ? -insets.top : 0, // e
             bottom: Platform.OS === 'ios' ? -insets.bottom : 0
           }}
           onClosed={() => {
